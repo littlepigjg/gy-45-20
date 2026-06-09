@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { IconMeta, IconItem, Project, SpriteConfig } from '../types';
+import type { IconMeta, IconItem, Project, SpriteConfig, AnimationConfig } from '../types';
 import { generateId, iconItemToMeta } from '../utils';
 import {
   saveIconDataUrl,
@@ -40,6 +40,9 @@ interface AppState {
   activeProjectId: string | null;
   generatorIcons: IconItem[];
   spriteConfig: SpriteConfig;
+  animationFrames: IconItem[];
+  animationConfig: AnimationConfig;
+  animationSpriteDataUrl: string;
 
   setToastHandlers: (handlers: ToastHandlers) => void;
 
@@ -48,6 +51,12 @@ interface AppState {
   clearGeneratorIcons: () => void;
   setGeneratorIcons: (icons: IconItem[]) => void;
   updateSpriteConfig: (config: Partial<SpriteConfig>) => void;
+  clearAnimationFrames: () => void;
+  setAnimationFrames: (icons: IconItem[]) => void;
+  addAnimationFrames: (icons: IconItem[]) => void;
+  removeAnimationFrame: (id: string) => void;
+  updateAnimationConfig: (config: Partial<AnimationConfig>) => void;
+  setAnimationSpriteDataUrl: (url: string) => void;
 
   createProject: (name: string, description?: string) => Project;
   deleteProject: (id: string) => Promise<void>;
@@ -106,10 +115,44 @@ export const useAppStore = create<AppState>((set, get) => ({
     classPrefix: 'sprite',
     retina: false,
   },
+  animationFrames: [],
+  animationConfig: {
+    sourceMode: 'frames',
+    frameRate: 24,
+    loopCount: 'infinite',
+    direction: 'normal',
+    fillMode: 'forwards',
+    playOnLoad: true,
+    classPrefix: 'anim',
+    animationName: 'sprite-animation',
+    useSteps: true,
+    optimizeGPU: true,
+    rows: 1,
+    columns: 0,
+    frameWidth: 0,
+    frameHeight: 0,
+    spacing: 0,
+    padding: 0,
+  },
+  animationSpriteDataUrl: '',
 
   setToastHandlers: (handlers) => {
     setStoreToastHandlers(handlers);
   },
+
+  clearAnimationFrames: () => set({ animationFrames: [] }),
+  setAnimationFrames: (icons) => set({ animationFrames: icons }),
+  addAnimationFrames: (icons) =>
+    set((state) => ({ animationFrames: [...state.animationFrames, ...icons] })),
+  removeAnimationFrame: (id) =>
+    set((state) => ({
+      animationFrames: state.animationFrames.filter((i) => i.id !== id),
+    })),
+  updateAnimationConfig: (config) =>
+    set((state) => ({
+      animationConfig: { ...state.animationConfig, ...config },
+    })),
+  setAnimationSpriteDataUrl: (url) => set({ animationSpriteDataUrl: url }),
 
   addIcons: async (items) => {
     if (items.length === 0) return;

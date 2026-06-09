@@ -5,6 +5,7 @@ import ToastBridge from '@/components/ToastBridge';
 import Generator from '@/pages/Generator';
 import Splitter from '@/pages/Splitter';
 import Library from '@/pages/Library';
+import Animator from '@/pages/Animator';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/generator" replace />} />
               <Route path="/generator" element={<Generator />} />
+              <Route path="/animator" element={<Animator />} />
               <Route path="/splitter" element={<Splitter />} />
               <Route path="/library" element={<Library />} />
               <Route path="*" element={<Navigate to="/generator" replace />} />
